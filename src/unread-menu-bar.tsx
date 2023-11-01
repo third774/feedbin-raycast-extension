@@ -25,10 +25,14 @@ export default function MenuCommand(): JSX.Element {
       return acc;
     }, {}) ?? {};
 
-  const entries = Object.entries(entriesGroupedByFeedId).sort(
-    ([aKey], [bKey]) =>
+  const entries = Object.entries(entriesGroupedByFeedId)
+    // Sometimes when adding or removing subscriptions
+    // the subscriptionMap might not contain the subscription
+    // for the entry returned.
+    .filter(([key]) => subscriptionMap[+key])
+    .sort(([aKey], [bKey]) =>
       subscriptionMap[+aKey].title.localeCompare(subscriptionMap[+bKey].title),
-  );
+    );
 
   const unreadCount = data ? data.length : 0;
 
