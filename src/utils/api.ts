@@ -1,8 +1,8 @@
 import { getPreferenceValues } from "@raycast/api";
-import { showFailureToast, useFetch } from "@raycast/utils";
+import { showFailureToast } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useEffect, useMemo } from "react";
-import { feedbinGlobalCache, getCachedData, useSyncCache } from "./cache";
+import { useCachedFetch } from "./cache";
 import { toURLSearchParams } from "./toURLSearchParams";
 
 const API_ROOT = "https://api.feedbin.com";
@@ -56,35 +56,15 @@ type EntriesParams = {
   page?: number;
 };
 
-export function getEntries(params: EntriesParams = {}) {
-  const searchParams = toURLSearchParams(params);
-  return fetch(`${API_ROOT}/v2/entries.json?${searchParams}`, {
-    method: "GET",
-    headers: getHeaders(),
-  })
-    .then((res) => res.json() as Promise<Entry[]>)
-    .catch((err) => {
-      showFailureToast("Failed to fetch entries");
-      throw err;
-    });
-}
-
 export function useEntries(params: EntriesParams = {}) {
   const searchParams = toURLSearchParams(params);
-
-  const url = `${API_ROOT}/v2/entries.json?${searchParams}`;
-
-  const { error, revalidate, data, ...rest } = useFetch<
-    Entry[],
-    Entry[] | undefined
-  >(url, {
-    method: "GET",
-    headers: getHeaders(),
-    keepPreviousData: true,
-    initialData: getCachedData<Entry[]>(feedbinGlobalCache, url),
-  });
-
-  useSyncCache(feedbinGlobalCache, url, data);
+  const { error, revalidate, ...rest } = useCachedFetch<Entry[]>(
+    `${API_ROOT}/v2/entries.json?${searchParams}`,
+    {
+      method: "GET",
+      headers: getHeaders(),
+    },
+  );
 
   useEffect(() => {
     if (error) {
@@ -103,18 +83,16 @@ export function useEntries(params: EntriesParams = {}) {
   return {
     revalidate,
     error,
-    data,
     ...rest,
   };
 }
 
 export function useSubscriptions() {
-  const { error, revalidate, ...rest } = useFetch<Subscription[]>(
+  const { error, revalidate, ...rest } = useCachedFetch<Subscription[]>(
     `${API_ROOT}/v2/subscriptions.json?`,
     {
       method: "GET",
       headers: getHeaders(),
-      keepPreviousData: true,
     },
   );
 
@@ -198,10 +176,9 @@ export function deleteStarredEntries(...entryIds: number[]) {
 }
 
 export function useStarredEntriesIds() {
-  return useFetch<number[]>(`${API_ROOT}/v2/starred_entries.json`, {
+  return useCachedFetch<number[]>(`${API_ROOT}/v2/starred_entries.json`, {
     method: "GET",
     headers: getHeaders(),
-    keepPreviousData: true,
   });
 }
 
@@ -210,10 +187,9 @@ export function useStarredEntries() {
 }
 
 export function useFeedEntries(id: number) {
-  return useFetch<Entry[]>(`${API_ROOT}/v2/feeds/${id}/entries.json`, {
+  return useCachedFetch<Entry[]>(`${API_ROOT}/v2/feeds/${id}/entries.json`, {
     method: "GET",
     headers: getHeaders(),
-    keepPreviousData: true,
   });
 }
 
@@ -228,18 +204,10 @@ export function unsubscribe(subscriptionId: number) {
 }
 
 export function useUnreadEntriesIds() {
-  const url = `${API_ROOT}/v2/unread_entries.json`;
-
-  const { data, ...rest } = useFetch<number[], number[] | undefined>(url, {
+  return useCachedFetch<number[]>(`${API_ROOT}/v2/unread_entries.json`, {
     method: "GET",
     headers: getHeaders(),
-    keepPreviousData: true,
-    initialData: getCachedData<number[]>(feedbinGlobalCache, url),
   });
-
-  useSyncCache(feedbinGlobalCache, url, data);
-
-  return { data, ...rest };
 }
 
 export type SingleFeed = {
@@ -289,8 +257,7 @@ export interface Icon {
 }
 
 export function useIcons() {
-  return useFetch<Icon[]>(`${API_ROOT}/v2/icons.json`, {
+  return useCachedFetch<Icon[]>(`${API_ROOT}/v2/icons.json`, {
     headers: getHeaders(),
-    keepPreviousData: true,
   });
 }
