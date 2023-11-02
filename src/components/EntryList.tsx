@@ -7,6 +7,7 @@ import { useIcon } from "../utils/useIcon";
 import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
 import { ActionStarToggle } from "./ActionStarToggle";
 import { ActionViewSubscription } from "./ActionViewSubscription";
@@ -62,6 +63,7 @@ export function EntryList(props: EntryListProps) {
           <List.Section title="Unread">
             {unreadEntries.data?.length === 0 && (
               <List.Item
+                icon={Icon.Tray}
                 actions={
                   <ActionPanel>
                     {props.revalidateEntries && (
@@ -118,8 +120,8 @@ function ListItem(props: { entry: Entry; isUnread?: boolean }) {
       actions={
         <ActionPanel>
           <ActionShowEntry entry={entry} />
-          <Action.OpenInBrowser url={entry.url} />
           <ActionAiSummary entry={entry} />
+          <ActionOpenInBrowser url={entry.url} />
           <ActionCopyUrlToClipboard url={entry.url} />
           <ActionViewSubscription
             feedName={subscriptionMap[entry.feed_id]?.title}

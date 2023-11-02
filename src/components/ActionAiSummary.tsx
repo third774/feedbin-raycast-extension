@@ -30,17 +30,13 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
 
   return (
     <Action.Push
-      title="Summarize"
+      title="View AI Summary"
       icon={Icon.Stars}
       target={
         <FeedbinApiContextProvider>
           <DetailSummarized entry={props.entry} />
         </FeedbinApiContextProvider>
       }
-      shortcut={{
-        key: "s",
-        modifiers: ["cmd", "shift"],
-      }}
     />
   );
 }
@@ -48,14 +44,11 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
 const prompt = (content: string) =>
   `INSTRUCTIONS:
 ---
-Summarize the CONTENT below with a brief description and short list of key points using the FORMAT below:
+Create a SUMMARY of the CONTENT below using the FORMAT below:
 ---
 
 FORMAT:
 ---
-### Description
-[Description of the content]
-
 ### Key Points
 - [Key point 1]
 - [Key point 2]

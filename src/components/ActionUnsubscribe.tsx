@@ -26,15 +26,16 @@ export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
     <Action
       title="Unsubscribe"
       icon={Icon.MinusCircle}
+      style={Action.Style.Destructive}
       shortcut={{
-        key: "u",
-        modifiers: ["cmd"],
+        key: "x",
+        modifiers: ["ctrl"],
       }}
       onAction={async () => {
         if (
           await confirmAlert({
             title: `Are you sure?`,
-            message: props.subscription.title,
+            message: props.subscription.feed_url,
             icon: Icon.ExclamationMark,
             primaryAction: {
               title: "Unsubscribe",

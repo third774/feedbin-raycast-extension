@@ -1,4 +1,5 @@
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
+import { ActionOpenInBrowser } from "./components/ActionOpenInBrowser";
 import { ActionUnsubscribe } from "./components/ActionUnsubscribe";
 import { FeedList } from "./components/FeedList";
 import {
@@ -16,7 +17,7 @@ export function SubscriptionItem(props: { sub: Subscription }) {
       key={props.sub.id}
       title={props.sub.title}
       icon={icon}
-      subtitle={props.sub.feed_url}
+      subtitle={props.sub.site_url}
       keywords={[props.sub.site_url]}
       actions={
         <ActionPanel>
@@ -29,11 +30,20 @@ export function SubscriptionItem(props: { sub: Subscription }) {
               </FeedbinApiContextProvider>
             }
           />
-          <Action.OpenInBrowser url={props.sub.site_url} />
+          <ActionOpenInBrowser url={props.sub.site_url} />
           <Action.CopyToClipboard
             shortcut={{
               modifiers: ["cmd", "shift"],
               key: "c",
+            }}
+            icon={Icon.CopyClipboard}
+            title="Copy Site URL"
+            content={props.sub.site_url}
+          />
+          <Action.CopyToClipboard
+            shortcut={{
+              modifiers: ["cmd", "shift"],
+              key: ",",
             }}
             icon={Icon.CopyClipboard}
             title="Copy Feed URL"

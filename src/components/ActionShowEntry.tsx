@@ -8,6 +8,7 @@ import { Entry } from "../utils/api";
 import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionStarToggle } from "./ActionStarToggle";
 import { ActionViewSubscription } from "./ActionViewSubscription";
 
@@ -29,7 +30,7 @@ export function ActionShowEntry(props: ActionShowEntryProps) {
             navigationTitle={props.entry.title ?? props.entry.url}
             actions={
               <ActionPanel>
-                <Action.OpenInBrowser url={props.entry.url} />
+                <ActionOpenInBrowser url={props.entry.url} />
                 <ActionAiSummary entry={props.entry} />
                 <ActionCopyUrlToClipboard url={props.entry.url} />
                 <ActionViewSubscription
