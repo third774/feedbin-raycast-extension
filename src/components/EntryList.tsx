@@ -10,6 +10,7 @@ import { ActionMarkAsRead } from "./ActionMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
 import { ActionStarToggle } from "./ActionStarToggle";
+import { ActionUnsubscribe } from "./ActionUnsubscribe";
 import { ActionViewSubscription } from "./ActionViewSubscription";
 
 export interface EntryListProps {
@@ -60,19 +61,17 @@ export function EntryList(props: EntryListProps) {
 
       {prioritizeUnread && (
         <>
-          <List.Section title="Unread">
+          <List.Section title={`Unread (${unreadEntries.data?.length ?? 0})`}>
             {unreadEntries.data?.length === 0 && (
               <List.Item
                 icon={Icon.Tray}
                 actions={
                   <ActionPanel>
-                    {props.revalidateEntries && (
-                      <Action
-                        title="Refresh"
-                        icon={Icon.RotateClockwise}
-                        onAction={() => unreadEntries.revalidate()}
-                      />
-                    )}
+                    <Action
+                      title="Refresh"
+                      icon={Icon.RotateClockwise}
+                      onAction={() => unreadEntries.revalidate()}
+                    />
                   </ActionPanel>
                 }
                 title="No Unread Items"
@@ -129,6 +128,7 @@ function ListItem(props: { entry: Entry; isUnread?: boolean }) {
           />
           <ActionStarToggle id={entry.id} />
           <ActionMarkAsRead id={entry.id} />
+          <ActionUnsubscribe feedId={entry.feed_id} />
         </ActionPanel>
       }
     />

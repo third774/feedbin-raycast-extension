@@ -10,6 +10,7 @@ import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionStarToggle } from "./ActionStarToggle";
+import { ActionUnsubscribe } from "./ActionUnsubscribe";
 import { ActionViewSubscription } from "./ActionViewSubscription";
 
 export interface ActionShowEntryProps {
@@ -39,6 +40,7 @@ export function ActionShowEntry(props: ActionShowEntryProps) {
                 />
                 <ActionStarToggle id={props.entry.id} />
                 <ActionMarkAsRead id={props.entry.id} />
+                <ActionUnsubscribe feedId={props.entry.feed_id} />
               </ActionPanel>
             }
           />

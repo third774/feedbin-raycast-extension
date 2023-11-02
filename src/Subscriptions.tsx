@@ -49,7 +49,7 @@ export function SubscriptionItem(props: { sub: Subscription }) {
             title="Copy Feed URL"
             content={props.sub.feed_url}
           />
-          <ActionUnsubscribe subscription={props.sub} />
+          <ActionUnsubscribe feedId={props.sub.feed_id} />
         </ActionPanel>
       }
     />

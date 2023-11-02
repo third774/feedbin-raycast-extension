@@ -15,8 +15,10 @@ import {
 import { Entry } from "../utils/api";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
 import { ActionStarToggle } from "./ActionStarToggle";
+import { ActionUnsubscribe } from "./ActionUnsubscribe";
 import { ActionViewSubscription } from "./ActionViewSubscription";
 
 export interface ActionAiSummaryProps {
@@ -87,7 +89,7 @@ export function DetailSummarized(props: { entry: Entry }) {
       }
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser url={props.entry.url} />
+          <ActionOpenInBrowser url={props.entry.url} />
           <ActionShowEntry entry={props.entry} />
           <ActionCopyUrlToClipboard url={props.entry.url} />
           <ActionViewSubscription
@@ -96,6 +98,7 @@ export function DetailSummarized(props: { entry: Entry }) {
           />
           <ActionStarToggle id={props.entry.id} />
           <ActionMarkAsRead id={props.entry.id} />
+          <ActionUnsubscribe feedId={props.entry.feed_id} />
         </ActionPanel>
       }
     />

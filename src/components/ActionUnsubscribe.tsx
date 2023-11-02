@@ -8,17 +8,23 @@ import {
   launchCommand,
 } from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
-import { Subscription, unsubscribe } from "../utils/api";
+import { unsubscribe } from "../utils/api";
 
 export interface ActionUnsubscribeProps {
-  subscription: Subscription;
+  feedId: number;
 }
 
 export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
   const { subscriptions } = useFeedbinApiContext();
 
+  const subscription = subscriptions.data?.find(
+    (s) => s.feed_id === props.feedId,
+  );
+
+  if (!subscription) return null;
+
   // Don't allow unsubscribing from Pages feeds
-  if (props.subscription.site_url === "http://pages.feedbinusercontent.com") {
+  if (subscription.site_url === "http://pages.feedbinusercontent.com") {
     return null;
   }
 
@@ -35,7 +41,7 @@ export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
         if (
           await confirmAlert({
             title: `Are you sure?`,
-            message: props.subscription.feed_url,
+            message: subscription.feed_url,
             icon: Icon.ExclamationMark,
             primaryAction: {
               title: "Unsubscribe",
@@ -43,9 +49,9 @@ export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
             },
           })
         ) {
-          await subscriptions.mutate(unsubscribe(props.subscription.id), {
+          await subscriptions.mutate(unsubscribe(subscription.id), {
             optimisticUpdate: (subs) =>
-              subs?.filter((sub) => sub.id !== props.subscription.id),
+              subs?.filter((sub) => sub.id !== subscription.id),
           });
           launchCommand({
             name: "unread-menu-bar",
