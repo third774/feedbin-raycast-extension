@@ -1,22 +1,31 @@
 import { MenuBarExtra, open, updateCommandMetadata } from "@raycast/api";
 import { useEffect } from "react";
-import { Entry, useEntries, useSubscriptionMap } from "./utils/api";
+import {
+  Entry,
+  useEntries,
+  useSubscriptionMap,
+  useUnreadEntriesIds,
+} from "./utils/api";
 
 export default function MenuCommand(): JSX.Element {
-  const { isLoading, data } = useEntries({ read: "false" });
-  const { data: subscriptionMap, isLoading: isLoadingSubscriptionMap } =
-    useSubscriptionMap();
+  const entries = useEntries({ read: "false" });
+  const unreadEntriesIds = useUnreadEntriesIds();
+  const subscriptionMap = useSubscriptionMap();
+
+  const unreadEntries = entries.data?.filter(
+    (entry) => unreadEntriesIds.data?.includes(entry.id),
+  );
 
   useEffect(() => {
     (async () => {
       await updateCommandMetadata({
-        subtitle: `${data?.length.toString() ?? ""} unread items`,
+        subtitle: `${unreadEntries?.length.toString() ?? ""} unread items`,
       });
     })();
   }, []);
 
   const entriesGroupedByFeedId =
-    data?.reduce<Record<number, Entry[]>>((acc, entry) => {
+    unreadEntries?.reduce<Record<number, Entry[]>>((acc, entry) => {
       if (acc[entry.feed_id]) {
         acc[entry.feed_id].push(entry);
       } else {
@@ -25,29 +34,35 @@ export default function MenuCommand(): JSX.Element {
       return acc;
     }, {}) ?? {};
 
-  const entries = Object.entries(entriesGroupedByFeedId)
+  const groupedEntries = Object.entries(entriesGroupedByFeedId)
     // Sometimes when adding or removing subscriptions
     // the subscriptionMap might not contain the subscription
     // for the entry returned.
-    .filter(([key]) => subscriptionMap[+key])
+    .filter(([key]) => subscriptionMap.data[+key])
     .sort(([aKey], [bKey]) =>
-      subscriptionMap[+aKey].title.localeCompare(subscriptionMap[+bKey].title),
+      subscriptionMap.data[+aKey].title.localeCompare(
+        subscriptionMap.data[+bKey].title,
+      ),
     );
 
-  const unreadCount = data ? data.length : 0;
+  const unreadCount = unreadEntries ? unreadEntries.length : 0;
 
   return (
     <MenuBarExtra
       icon={{ source: "feedbin.png" }}
       title={unreadCount ? unreadCount.toString() : undefined}
-      isLoading={isLoading || isLoadingSubscriptionMap}
+      isLoading={
+        entries.isLoading ||
+        subscriptionMap.isLoading ||
+        unreadEntriesIds.isLoading
+      }
     >
       {unreadCount === 0 && <MenuBarExtra.Section title="No unread items" />}
-      {entries.map(([feedId, entries]) => {
+      {groupedEntries.map(([feedId, entries]) => {
         return (
           <MenuBarExtra.Section
             key={feedId}
-            title={subscriptionMap?.[+feedId]?.title ?? "Unknown Feed"}
+            title={subscriptionMap.data?.[+feedId]?.title ?? "Unknown Feed"}
           >
             {entries.map((entry) => {
               let title = entry.title ?? entry.summary;

@@ -34,11 +34,8 @@ const ReadSection = (props: {
   );
 
 export function EntryList(props: EntryListProps) {
-  const { isLoading, unreadEntriesSet } = useFeedbinApiContext();
+  const { isLoading, unreadEntriesSet, unreadEntries } = useFeedbinApiContext();
   const [prioritizeUnread, setPrioritizeUnread] = useState(true);
-  const unreadItems = props.entries?.filter((entry) =>
-    unreadEntriesSet.has(entry.id),
-  );
 
   return (
     <List
@@ -63,7 +60,7 @@ export function EntryList(props: EntryListProps) {
       {prioritizeUnread && (
         <>
           <List.Section title="Unread">
-            {unreadItems && unreadItems.length === 0 && (
+            {unreadEntries.data?.length === 0 && (
               <List.Item
                 actions={
                   <ActionPanel>
@@ -79,10 +76,9 @@ export function EntryList(props: EntryListProps) {
                 title="No Unread Items"
               />
             )}
-            {unreadEntriesSet &&
-              unreadItems?.map((entry) => (
-                <ListItem key={entry.id} entry={entry} />
-              ))}
+            {unreadEntries.data?.map((entry) => (
+              <ListItem key={entry.id} entry={entry} isUnread />
+            ))}
           </List.Section>
         </>
       )}
@@ -99,7 +95,7 @@ export function EntryList(props: EntryListProps) {
   );
 }
 
-function ListItem(props: { entry: Entry }) {
+function ListItem(props: { entry: Entry; isUnread?: boolean }) {
   const { subscriptionMap, starredEntriesIdsSet, unreadEntriesSet } =
     useFeedbinApiContext();
   const { entry } = props;
@@ -115,7 +111,7 @@ function ListItem(props: { entry: Entry }) {
         starredEntriesIdsSet.has(entry.id) && {
           icon: Icon.Star,
         },
-        unreadEntriesSet.has(entry.id) && {
+        (unreadEntriesSet.has(entry.id) || props.isUnread) && {
           icon: Icon.Tray,
         },
       ].filter(Boolean)}

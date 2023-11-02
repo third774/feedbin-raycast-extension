@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useMemo } from "react";
 import invariant from "tiny-invariant";
 import {
   Subscription,
+  useEntries,
   useIcons,
   useStarredEntries,
   useStarredEntriesIds,
@@ -15,6 +16,7 @@ type FeedbinApiContext = {
   starredEntries: ReturnType<typeof useStarredEntries>;
   starredEntriesIds: ReturnType<typeof useStarredEntriesIds>;
   unreadEntriesIds: ReturnType<typeof useUnreadEntriesIds>;
+  unreadEntries: ReturnType<typeof useEntries>;
   iconMap: Record<string, string>;
   subscriptionMap: Record<number, Subscription>;
   starredEntriesIdsSet: Set<number>;
@@ -28,6 +30,7 @@ const Context = createContext<FeedbinApiContext>(undefined as any);
 export const FeedbinApiContextProvider = (props: { children?: ReactNode }) => {
   const subscriptions = useSubscriptions();
   const starredEntries = useStarredEntries();
+  const unreadEntries = useEntries({ read: "false" });
   const icons = useIcons();
   const starredEntriesIds = useStarredEntriesIds();
   const unreadEntriesIds = useUnreadEntriesIds();
@@ -36,7 +39,8 @@ export const FeedbinApiContextProvider = (props: { children?: ReactNode }) => {
     starredEntries.isLoading ||
     icons.isLoading ||
     starredEntriesIds.isLoading ||
-    unreadEntriesIds.isLoading;
+    unreadEntriesIds.isLoading ||
+    unreadEntries.isLoading;
 
   const subscriptionMap = useMemo(
     () =>
@@ -71,6 +75,7 @@ export const FeedbinApiContextProvider = (props: { children?: ReactNode }) => {
   const api: FeedbinApiContext = {
     subscriptions,
     subscriptionMap,
+    unreadEntries,
     icons,
     iconMap,
     starredEntries,

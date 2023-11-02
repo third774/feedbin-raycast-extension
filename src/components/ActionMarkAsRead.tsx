@@ -8,17 +8,25 @@ export interface ActionMarkAsReadProps {
 }
 
 export function ActionMarkAsRead(props: ActionMarkAsReadProps) {
-  const { unreadEntriesSet, unreadEntriesIds } = useFeedbinApiContext();
+  const { unreadEntriesSet, unreadEntriesIds, unreadEntries } =
+    useFeedbinApiContext();
   if (!unreadEntriesSet.has(props.id)) return null;
   return (
     <Action
       title="Mark as Read"
       icon={Icon.Check}
       onAction={async () => {
-        await unreadEntriesIds.mutate(markAsRead(props.id), {
-          optimisticUpdate: (ids) => ids?.filter((id) => id !== props.id),
-          shouldRevalidateAfter: false,
-        });
+        await unreadEntries.mutate(
+          unreadEntriesIds.mutate(markAsRead(props.id), {
+            optimisticUpdate: (ids) => ids?.filter((id) => id !== props.id),
+            shouldRevalidateAfter: false,
+          }),
+          {
+            optimisticUpdate: (entries) =>
+              entries?.filter((entry) => entry.id !== props.id),
+            shouldRevalidateAfter: false,
+          },
+        );
         await launchCommand({
           name: "unread-menu-bar",
           type: LaunchType.Background,
