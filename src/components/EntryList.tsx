@@ -68,7 +68,7 @@ export function EntryList(props: EntryListProps) {
                       <Action
                         title="Refresh"
                         icon={Icon.RotateClockwise}
-                        onAction={() => props.revalidateEntries?.()}
+                        onAction={() => unreadEntries.revalidate()}
                       />
                     )}
                   </ActionPanel>
@@ -117,8 +117,8 @@ function ListItem(props: { entry: Entry; isUnread?: boolean }) {
       ].filter(Boolean)}
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser url={entry.url} />
           <ActionShowEntry entry={entry} />
+          <Action.OpenInBrowser url={entry.url} />
           <ActionAiSummary entry={entry} />
           <ActionCopyUrlToClipboard url={entry.url} />
           <ActionViewSubscription
