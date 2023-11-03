@@ -1,10 +1,17 @@
-import { ReactNode, createContext, useContext, useMemo } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import invariant from "tiny-invariant";
 import {
   Subscription,
   useEntries,
   useIcons,
-  useStarredEntries,
   useStarredEntriesIds,
   useSubscriptions,
   useUnreadEntriesIds,
@@ -13,30 +20,49 @@ import {
 type FeedbinApiContext = {
   subscriptions: ReturnType<typeof useSubscriptions>;
   icons: ReturnType<typeof useIcons>;
-  starredEntries: ReturnType<typeof useStarredEntries>;
   starredEntriesIds: ReturnType<typeof useStarredEntriesIds>;
   unreadEntriesIds: ReturnType<typeof useUnreadEntriesIds>;
   unreadEntries: ReturnType<typeof useEntries>;
+  entries: ReturnType<typeof useEntries>;
   iconMap: Record<string, string>;
   subscriptionMap: Record<number, Subscription>;
   starredEntriesIdsSet: Set<number>;
   unreadEntriesSet: Set<number>;
   isLoading: boolean;
+  filterFeedId: number | undefined;
+  setFilterFeedId: Dispatch<SetStateAction<number | undefined>>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Context = createContext<FeedbinApiContext>(undefined as any);
 
-export const FeedbinApiContextProvider = (props: { children?: ReactNode }) => {
+export const FeedbinApiContextProvider = (props: {
+  children?: ReactNode;
+  feedId?: number;
+  starred?: boolean;
+}) => {
+  const [filterFeedId, setFilterFeedId] = useState<number | undefined>(
+    props.feedId,
+  );
+
+  const starred = props.starred ? true : undefined;
   const subscriptions = useSubscriptions();
-  const starredEntries = useStarredEntries();
-  const unreadEntries = useEntries({ read: "false" });
+  const unreadEntries = useEntries({
+    read: false,
+    feedId: filterFeedId,
+    starred,
+  });
+
+  const entries = useEntries({
+    feedId: filterFeedId,
+    starred,
+  });
+
   const icons = useIcons();
   const starredEntriesIds = useStarredEntriesIds();
   const unreadEntriesIds = useUnreadEntriesIds();
   const isLoading =
     subscriptions.isLoading ||
-    starredEntries.isLoading ||
     icons.isLoading ||
     starredEntriesIds.isLoading ||
     unreadEntriesIds.isLoading ||
@@ -78,12 +104,14 @@ export const FeedbinApiContextProvider = (props: { children?: ReactNode }) => {
     unreadEntries,
     icons,
     iconMap,
-    starredEntries,
     starredEntriesIds,
     starredEntriesIdsSet,
     unreadEntriesIds,
     unreadEntriesSet,
     isLoading,
+    filterFeedId,
+    setFilterFeedId,
+    entries,
   };
 
   return <Context.Provider value={api}>{props.children}</Context.Provider>;

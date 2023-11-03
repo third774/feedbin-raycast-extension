@@ -1,7 +1,7 @@
 import { Action, Icon } from "@raycast/api";
 import { FeedbinApiContextProvider } from "../utils/FeedbinApiContext";
 import { Entry } from "../utils/api";
-import { FeedList } from "./FeedList";
+import { EntryList } from "./EntryList";
 
 export interface ActionViewSubscriptionProps {
   feedName: string;
@@ -18,11 +18,8 @@ export function ActionViewSubscription(props: ActionViewSubscriptionProps) {
       }}
       icon={Icon.Filter}
       target={
-        <FeedbinApiContextProvider>
-          <FeedList
-            navigationTitle={props.feedName}
-            feedId={props.entry.feed_id}
-          />
+        <FeedbinApiContextProvider feedId={props.entry.feed_id}>
+          <EntryList navigationTitle={props.feedName} />
         </FeedbinApiContextProvider>
       }
     />

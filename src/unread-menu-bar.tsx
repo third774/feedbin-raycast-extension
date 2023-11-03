@@ -16,7 +16,7 @@ import {
 
 export default function MenuCommand(): JSX.Element {
   const { showCountInMenuBar } = getPreferenceValues();
-  const entries = useEntries({ read: "false" });
+  const entries = useEntries({ read: false });
   const unreadEntriesIds = useUnreadEntriesIds();
   const subscriptionMap = useSubscriptionMap();
 

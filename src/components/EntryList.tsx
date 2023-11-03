@@ -1,11 +1,10 @@
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
-import { MutatePromise } from "@raycast/utils";
-import { ReactNode, useState } from "react";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { Entry } from "../utils/api";
 import { useIcon } from "../utils/useIcon";
 import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
+import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
@@ -14,84 +13,81 @@ import { ActionUnsubscribe } from "./ActionUnsubscribe";
 import { ActionViewSubscription } from "./ActionViewSubscription";
 
 export interface EntryListProps {
-  isLoading?: boolean;
   navigationTitle?: string;
-  entries: Entry[] | undefined;
-  mutateEntries?: MutatePromise<
-    Entry[] | undefined,
-    Entry[] | undefined,
-    unknown
-  >;
-  revalidateEntries?: () => void;
 }
 
-const ReadSection = (props: {
-  prioritizeUnread: boolean;
-  children: ReactNode;
-}) =>
-  props.prioritizeUnread ? (
-    <List.Section title="Read">{props.children}</List.Section>
-  ) : (
-    <>{props.children}</>
-  );
-
 export function EntryList(props: EntryListProps) {
-  const { isLoading, unreadEntriesSet, unreadEntries } = useFeedbinApiContext();
-  const [prioritizeUnread, setPrioritizeUnread] = useState(true);
+  const {
+    isLoading,
+    unreadEntriesSet,
+    unreadEntries,
+    entries,
+    filterFeedId,
+    setFilterFeedId,
+    subscriptions,
+  } = useFeedbinApiContext();
 
   return (
     <List
       navigationTitle={props.navigationTitle}
       searchBarAccessory={
-        <List.Dropdown
-          defaultValue={prioritizeUnread.toString()}
-          storeValue
-          tooltip="Option to prioritize unread entries"
-          onChange={(value) => setPrioritizeUnread(value === "true")}
-        >
-          <List.Dropdown.Item title="Prioritize Unread" value="true" />
-          <List.Dropdown.Item title="Show All in Order" value="false" />
-        </List.Dropdown>
+        props.navigationTitle ? undefined : (
+          <List.Dropdown
+            defaultValue={filterFeedId?.toString() ?? "all"}
+            tooltip="Option to prioritize unread entries"
+            onChange={(value) => {
+              setFilterFeedId(value === "all" ? undefined : Number(value));
+            }}
+          >
+            <List.Dropdown.Item title={"All feeds"} value={"all"} />
+            {subscriptions.data?.map((subscription) => {
+              return (
+                <List.Dropdown.Item
+                  key={subscription.id}
+                  title={subscription.title}
+                  keywords={[subscription.title, subscription.site_url]}
+                  value={subscription.feed_id.toString()}
+                />
+              );
+            })}
+            {/* <List.Dropdown.Item title="Prioritize Unread" value="true" />
+          <List.Dropdown.Item title="Show All in Order" value="false" /> */}
+          </List.Dropdown>
+        )
       }
-      isLoading={isLoading || props.isLoading}
+      isLoading={isLoading}
     >
-      {props.entries && props.entries.length === 0 && (
+      {entries.data && entries.data.length === 0 && (
         <List.EmptyView icon={Icon.CheckRosette} title="No content!" />
       )}
 
-      {prioritizeUnread && (
-        <>
-          <List.Section title={`Unread (${unreadEntries.data?.length ?? 0})`}>
-            {unreadEntries.data?.length === 0 && (
-              <List.Item
-                icon={Icon.Tray}
-                actions={
-                  <ActionPanel>
-                    <Action
-                      title="Refresh"
-                      icon={Icon.RotateClockwise}
-                      onAction={() => unreadEntries.revalidate()}
-                    />
-                  </ActionPanel>
-                }
-                title="No Unread Items"
-              />
-            )}
-            {unreadEntries.data?.map((entry) => (
-              <ListItem key={entry.id} entry={entry} isUnread />
-            ))}
-          </List.Section>
-        </>
-      )}
+      <List.Section title={`Unread (${unreadEntries.data?.length ?? 0})`}>
+        {unreadEntries.data?.length === 0 && (
+          <List.Item
+            icon={Icon.Tray}
+            actions={
+              <ActionPanel>
+                <Action
+                  title="Refresh"
+                  icon={Icon.RotateClockwise}
+                  onAction={() => unreadEntries.revalidate()}
+                />
+              </ActionPanel>
+            }
+            title="No Unread Items"
+          />
+        )}
+        {unreadEntries.data?.map((entry) => (
+          <ListItem key={entry.id} entry={entry} isUnread />
+        ))}
+      </List.Section>
 
-      <ReadSection prioritizeUnread={prioritizeUnread}>
+      <List.Section title="Read">
         {unreadEntriesSet &&
-          props.entries
-            ?.filter((entry) =>
-              prioritizeUnread ? !unreadEntriesSet.has(entry.id) : true,
-            )
+          entries.data
+            ?.filter((entry) => !unreadEntriesSet.has(entry.id))
             .map((entry) => <ListItem key={entry.id} entry={entry} />)}
-      </ReadSection>
+      </List.Section>
     </List>
   );
 }
@@ -129,6 +125,7 @@ function ListItem(props: { entry: Entry; isUnread?: boolean }) {
           <ActionStarToggle id={entry.id} />
           <ActionMarkAsRead id={entry.id} />
           <ActionUnsubscribe feedId={entry.feed_id} />
+          <ActionDebugJson data={entry} />
         </ActionPanel>
       }
     />

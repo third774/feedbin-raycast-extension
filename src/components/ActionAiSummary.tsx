@@ -14,6 +14,7 @@ import {
 } from "../utils/FeedbinApiContext";
 import { Entry } from "../utils/api";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
+import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
@@ -45,21 +46,12 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
 
 const prompt = (content: string) =>
   `INSTRUCTIONS:
----
-Create a SUMMARY of the CONTENT below using the FORMAT below:
----
-
-FORMAT:
----
-### Key Points
-- [Key point 1]
-- [Key point 2]
-- [Key point 3]
+Summarize the CONTENT below:
 ---
 
----
 CONTENT:
 ${content}
+
 ---
 
 ---
@@ -99,6 +91,7 @@ export function DetailSummarized(props: { entry: Entry }) {
           <ActionStarToggle id={props.entry.id} />
           <ActionMarkAsRead id={props.entry.id} />
           <ActionUnsubscribe feedId={props.entry.feed_id} />
+          <ActionDebugJson data={props.entry} />
         </ActionPanel>
       }
     />

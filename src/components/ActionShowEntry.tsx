@@ -7,6 +7,7 @@ import {
 import { Entry } from "../utils/api";
 import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
+import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionStarToggle } from "./ActionStarToggle";
@@ -16,6 +17,8 @@ import { ActionViewSubscription } from "./ActionViewSubscription";
 export interface ActionShowEntryProps {
   entry: Entry;
 }
+
+const htmlRegex = /<(\w+)[^>]*>(.*?)<\/\1>/;
 
 export function ActionShowEntry(props: ActionShowEntryProps) {
   const { subscriptionMap } = useFeedbinApiContext();
@@ -27,7 +30,11 @@ export function ActionShowEntry(props: ActionShowEntryProps) {
       target={
         <FeedbinApiContextProvider>
           <Detail
-            markdown={NodeHtmlMarkdown.translate(props.entry.content)}
+            markdown={
+              htmlRegex.test(props.entry.content)
+                ? NodeHtmlMarkdown.translate(props.entry.content)
+                : props.entry.content
+            }
             navigationTitle={props.entry.title ?? props.entry.url}
             actions={
               <ActionPanel>
@@ -41,6 +48,7 @@ export function ActionShowEntry(props: ActionShowEntryProps) {
                 <ActionStarToggle id={props.entry.id} />
                 <ActionMarkAsRead id={props.entry.id} />
                 <ActionUnsubscribe feedId={props.entry.feed_id} />
+                <ActionDebugJson data={props.entry} />
               </ActionPanel>
             }
           />

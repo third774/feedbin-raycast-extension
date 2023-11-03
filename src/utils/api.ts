@@ -51,15 +51,18 @@ const jsonHeaders = {
 
 type EntriesParams = {
   mode?: "extended";
-  read?: "false";
-  starred?: "true";
+  read?: false;
+  starred?: true;
   page?: number;
+  feedId?: number;
 };
 
-export function useEntries(params: EntriesParams = {}) {
+export function useEntries({ feedId, ...params }: EntriesParams = {}) {
   const searchParams = toURLSearchParams(params);
   const { error, revalidate, ...rest } = useCachedFetch<Entry[]>(
-    `${API_ROOT}/v2/entries.json?${searchParams}`,
+    feedId
+      ? `${API_ROOT}/v2/feeds/${feedId}/entries.json?${searchParams}`
+      : `${API_ROOT}/v2/entries.json?${searchParams}`,
     {
       method: "GET",
       headers: getHeaders(),
@@ -182,8 +185,8 @@ export function useStarredEntriesIds() {
   });
 }
 
-export function useStarredEntries() {
-  return useEntries({ starred: "true" });
+export function useStarredEntries(params: EntriesParams = {}) {
+  return useEntries({ ...params, starred: true });
 }
 
 export function useFeedEntries(id: number) {

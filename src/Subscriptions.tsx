@@ -1,7 +1,8 @@
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
+import { ActionDebugJson } from "./components/ActionDebugJson";
 import { ActionOpenInBrowser } from "./components/ActionOpenInBrowser";
 import { ActionUnsubscribe } from "./components/ActionUnsubscribe";
-import { FeedList } from "./components/FeedList";
+import { EntryList } from "./components/EntryList";
 import {
   FeedbinApiContextProvider,
   useFeedbinApiContext,
@@ -25,8 +26,8 @@ export function SubscriptionItem(props: { sub: Subscription }) {
             title="View Feed"
             icon={Icon.List}
             target={
-              <FeedbinApiContextProvider>
-                <FeedList feedId={props.sub.feed_id} />
+              <FeedbinApiContextProvider feedId={props.sub.feed_id}>
+                <EntryList navigationTitle={props.sub.title} />
               </FeedbinApiContextProvider>
             }
           />
@@ -50,6 +51,7 @@ export function SubscriptionItem(props: { sub: Subscription }) {
             content={props.sub.feed_url}
           />
           <ActionUnsubscribe feedId={props.sub.feed_id} />
+          <ActionDebugJson data={props.sub} />
         </ActionPanel>
       }
     />
