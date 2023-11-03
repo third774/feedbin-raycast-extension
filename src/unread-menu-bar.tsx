@@ -1,4 +1,11 @@
-import { MenuBarExtra, open, updateCommandMetadata } from "@raycast/api";
+import {
+  Icon,
+  MenuBarExtra,
+  getPreferenceValues,
+  open,
+  openCommandPreferences,
+  updateCommandMetadata,
+} from "@raycast/api";
 import { useEffect } from "react";
 import {
   Entry,
@@ -8,6 +15,7 @@ import {
 } from "./utils/api";
 
 export default function MenuCommand(): JSX.Element {
+  const { showCountInMenuBar } = getPreferenceValues();
   const entries = useEntries({ read: "false" });
   const unreadEntriesIds = useUnreadEntriesIds();
   const subscriptionMap = useSubscriptionMap();
@@ -50,7 +58,7 @@ export default function MenuCommand(): JSX.Element {
   return (
     <MenuBarExtra
       icon={{ source: "feedbin.png" }}
-      title={unreadCount ? unreadCount.toString() : undefined}
+      title={showCountInMenuBar ? unreadCount.toString() : undefined}
       isLoading={
         entries.isLoading ||
         subscriptionMap.isLoading ||
@@ -80,6 +88,14 @@ export default function MenuCommand(): JSX.Element {
           </MenuBarExtra.Section>
         );
       })}
+      <MenuBarExtra.Section>
+        <MenuBarExtra.Item
+          title="Configure Command"
+          icon={Icon.Gear}
+          shortcut={{ modifiers: ["cmd"], key: "," }}
+          onAction={openCommandPreferences}
+        />
+      </MenuBarExtra.Section>
     </MenuBarExtra>
   );
 }

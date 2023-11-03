@@ -37,9 +37,19 @@
     {
       "name": "unread-menu-bar",
       "title": "Feedbin Menu Bar",
-      "description": "Displays the number of unread entries in the menu bar",
+      "description": "Fetches updates in the background and displays the number of unread entries in the menu bar",
       "mode": "menu-bar",
-      "interval": "15m"
+      "interval": "15m",
+      "preferences": [
+        {
+          "name": "showCountInMenuBar",
+          "description": "Toggles whether or not the number of unread articles is shown in the menu bar",
+          "type": "checkbox",
+          "required": false,
+          "default": true,
+          "label": "Show Unread Count"
+        }
+      ]
     },
     {
       "name": "starred-entries",
