@@ -9,6 +9,7 @@ import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenEntryAndMarkAsRead } from "./ActionOpenEntryAndMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionStarToggle } from "./ActionStarToggle";
 import { ActionUnsubscribe } from "./ActionUnsubscribe";
@@ -21,14 +22,15 @@ export interface ActionShowEntryProps {
 const htmlRegex = /<(\w+)[^>]*>(.*?)<\/\1>/;
 
 export function ActionShowEntry(props: ActionShowEntryProps) {
-  const { subscriptionMap } = useFeedbinApiContext();
+  const contextApi = useFeedbinApiContext();
+  const { subscriptionMap } = contextApi;
   if (props.entry.content === null) return null;
   return (
     <Action.Push
       title="View in Raycast"
       icon={Icon.RaycastLogoNeg}
       target={
-        <FeedbinApiContextProvider>
+        <FeedbinApiContextProvider parentContext={contextApi}>
           <Detail
             markdown={
               htmlRegex.test(props.entry.content)
@@ -46,7 +48,8 @@ export function ActionShowEntry(props: ActionShowEntryProps) {
                   entry={props.entry}
                 />
                 <ActionStarToggle id={props.entry.id} />
-                <ActionMarkAsRead id={props.entry.id} />
+                <ActionMarkAsRead id={props.entry.id} pop />
+                <ActionOpenEntryAndMarkAsRead entry={props.entry} pop />
                 <ActionUnsubscribe feedId={props.entry.feed_id} />
                 <ActionDebugJson data={props.entry} />
               </ActionPanel>

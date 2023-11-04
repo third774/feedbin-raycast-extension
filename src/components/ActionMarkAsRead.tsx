@@ -1,13 +1,21 @@
-import { Action, Icon, LaunchType, launchCommand } from "@raycast/api";
+import {
+  Action,
+  Icon,
+  LaunchType,
+  launchCommand,
+  useNavigation,
+} from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { markAsRead } from "../utils/api";
 
 export interface ActionMarkAsReadProps {
   id: number;
   onAction?: () => void;
+  pop?: boolean;
 }
 
 export function ActionMarkAsRead(props: ActionMarkAsReadProps) {
+  const { pop } = useNavigation();
   const { unreadEntriesSet, unreadEntriesIds, unreadEntries } =
     useFeedbinApiContext();
   if (!unreadEntriesSet.has(props.id)) return null;
@@ -31,7 +39,9 @@ export function ActionMarkAsRead(props: ActionMarkAsReadProps) {
           name: "unread-menu-bar",
           type: LaunchType.Background,
         });
-        props.onAction?.();
+        if (props.pop) {
+          pop();
+        }
       }}
       shortcut={{
         key: "m",

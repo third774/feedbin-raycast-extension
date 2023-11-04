@@ -16,6 +16,7 @@ import { Entry } from "../utils/api";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenEntryAndMarkAsRead } from "./ActionOpenEntryAndMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
 import { ActionStarToggle } from "./ActionStarToggle";
@@ -36,7 +37,7 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
       title="View AI Summary"
       icon={Icon.Stars}
       target={
-        <FeedbinApiContextProvider>
+        <FeedbinApiContextProvider parentContext={useFeedbinApiContext()}>
           <DetailSummarized entry={props.entry} />
         </FeedbinApiContextProvider>
       }
@@ -89,7 +90,8 @@ export function DetailSummarized(props: { entry: Entry }) {
             entry={props.entry}
           />
           <ActionStarToggle id={props.entry.id} />
-          <ActionMarkAsRead id={props.entry.id} />
+          <ActionMarkAsRead id={props.entry.id} pop />
+          <ActionOpenEntryAndMarkAsRead entry={props.entry} pop />
           <ActionUnsubscribe feedId={props.entry.feed_id} />
           <ActionDebugJson data={props.entry} />
         </ActionPanel>

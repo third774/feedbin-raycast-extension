@@ -40,7 +40,15 @@ export const FeedbinApiContextProvider = (props: {
   children?: ReactNode;
   feedId?: number;
   starred?: boolean;
+  parentContext?: FeedbinApiContext;
 }) => {
+  if (props.parentContext)
+    return (
+      <Context.Provider value={props.parentContext}>
+        {props.children}
+      </Context.Provider>
+    );
+
   const [filterFeedId, setFilterFeedId] = useState<number | undefined>(
     props.feedId,
   );

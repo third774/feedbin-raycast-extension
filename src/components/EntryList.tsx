@@ -6,6 +6,7 @@ import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
 import { ActionDebugJson } from "./ActionDebugJson";
 import { ActionMarkAsRead } from "./ActionMarkAsRead";
+import { ActionOpenEntryAndMarkAsRead } from "./ActionOpenEntryAndMarkAsRead";
 import { ActionOpenInBrowser } from "./ActionOpenInBrowser";
 import { ActionShowEntry } from "./ActionShowEntry";
 import { ActionStarToggle } from "./ActionStarToggle";
@@ -124,6 +125,7 @@ function ListItem(props: { entry: Entry; isUnread?: boolean }) {
           />
           <ActionStarToggle id={entry.id} />
           <ActionMarkAsRead id={entry.id} />
+          <ActionOpenEntryAndMarkAsRead entry={entry} />
           <ActionUnsubscribe feedId={entry.feed_id} />
           <ActionDebugJson data={entry} />
         </ActionPanel>
