@@ -2,6 +2,7 @@ import { getPreferenceValues } from "@raycast/api";
 import { showFailureToast } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useEffect, useMemo } from "react";
+import { useCachedFetch } from "./cache";
 import { toURLSearchParams } from "./toURLSearchParams";
 import { useFetchWithEtag } from "./useFetchEtag";
 
@@ -91,7 +92,7 @@ export function useEntries({ feedId, ...params }: EntriesParams = {}) {
 }
 
 export function useSubscriptions() {
-  const { error, revalidate, ...rest } = useFetchWithEtag<Subscription[]>(
+  const { error, revalidate, ...rest } = useCachedFetch<Subscription[]>(
     `${API_ROOT}/v2/subscriptions.json?`,
     {
       method: "GET",
@@ -263,4 +264,12 @@ export function useIcons() {
   return useFetchWithEtag<Icon[]>(`${API_ROOT}/v2/icons.json`, {
     headers: getHeaders(),
   });
+}
+
+export function updateSubscription(id: number, title: string) {
+  return fetch(`${API_ROOT}/v2/subscriptions/${id}.json`, {
+    method: "PATCH",
+    headers: getHeaders(jsonHeaders),
+    body: JSON.stringify({ title }),
+  }).then((res) => res.json());
 }

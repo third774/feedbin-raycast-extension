@@ -1,4 +1,13 @@
-import { Action, ActionPanel, Icon, List } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Form,
+  Icon,
+  List,
+  Toast,
+  showToast,
+  useNavigation,
+} from "@raycast/api";
 import { ActionDebugJson } from "./components/ActionDebugJson";
 import { ActionOpenInBrowser } from "./components/ActionOpenInBrowser";
 import { ActionUnsubscribe } from "./components/ActionUnsubscribe";
@@ -7,7 +16,7 @@ import {
   FeedbinApiContextProvider,
   useFeedbinApiContext,
 } from "./utils/FeedbinApiContext";
-import { Subscription } from "./utils/api";
+import { Subscription, updateSubscription } from "./utils/api";
 import { useIcon } from "./utils/useIcon";
 
 export function SubscriptionItem(props: { sub: Subscription }) {
@@ -32,6 +41,19 @@ export function SubscriptionItem(props: { sub: Subscription }) {
             }
           />
           <ActionOpenInBrowser url={props.sub.site_url} />
+          <Action.Push
+            title="Edit"
+            icon={Icon.Pencil}
+            shortcut={{
+              key: "e",
+              modifiers: ["cmd"],
+            }}
+            target={
+              <FeedbinApiContextProvider parentContext={useFeedbinApiContext()}>
+                <RenameSubscription sub={props.sub} />
+              </FeedbinApiContextProvider>
+            }
+          />
           <Action.CopyToClipboard
             shortcut={{
               modifiers: ["cmd", "shift"],
@@ -75,5 +97,42 @@ export default function Command() {
     <FeedbinApiContextProvider>
       <SubscriptionsCommand />
     </FeedbinApiContextProvider>
+  );
+}
+
+function RenameSubscription(props: { sub: Subscription }) {
+  const { subscriptions } = useFeedbinApiContext();
+  const { pop } = useNavigation();
+
+  return (
+    <Form
+      actions={
+        <ActionPanel>
+          <Action.SubmitForm
+            title="Save"
+            onSubmit={async ({ title }) => {
+              try {
+                showToast(Toast.Style.Animated, "Saving...");
+                await subscriptions.mutate(
+                  updateSubscription(props.sub.id, title),
+                  {
+                    optimisticUpdate: (subs) =>
+                      subs?.map((sub) =>
+                        sub.id === props.sub.id ? { ...sub, title } : sub,
+                      ),
+                  },
+                );
+                pop();
+                showToast(Toast.Style.Success, "Subscription updated");
+              } catch (error) {
+                showToast(Toast.Style.Failure, "Failed to update subscription");
+              }
+            }}
+          />
+        </ActionPanel>
+      }
+    >
+      <Form.TextField title="Title" id="title" defaultValue={props.sub.title} />
+    </Form>
   );
 }
