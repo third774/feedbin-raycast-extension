@@ -1,12 +1,7 @@
-import {
-  Action,
-  Icon,
-  LaunchType,
-  launchCommand,
-  useNavigation,
-} from "@raycast/api";
+import { Action, Icon, useNavigation } from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { markAsRead } from "../utils/api";
+import { refreshMenuBar } from "../utils/refreshMenuBar";
 
 export interface ActionMarkAsReadProps {
   id: number;
@@ -35,10 +30,7 @@ export function ActionMarkAsRead(props: ActionMarkAsReadProps) {
             shouldRevalidateAfter: false,
           },
         );
-        await launchCommand({
-          name: "unread-menu-bar",
-          type: LaunchType.Background,
-        });
+        await refreshMenuBar();
         if (props.pop) {
           pop();
         }

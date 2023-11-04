@@ -2,10 +2,8 @@ import {
   Action,
   ActionPanel,
   Form,
-  LaunchType,
   Toast,
   getSelectedText,
-  launchCommand,
   popToRoot,
   showToast,
   useNavigation,
@@ -14,6 +12,7 @@ import { useEffect, useState } from "react";
 import { MultipleFeeds, createSubscription } from "./utils/api";
 import { closeAndShowToast } from "./utils/closeAndShowToast";
 import { isValidURL } from "./utils/isValidURL";
+import { refreshMenuBar } from "./utils/refreshMenuBar";
 
 function AddMultipleFeeds(props: { feeds: MultipleFeeds }) {
   return (
@@ -39,10 +38,7 @@ function AddMultipleFeeds(props: { feeds: MultipleFeeds }) {
                   ? `Subscribed to ${feeds[0]}`
                   : `Subscribed to ${feeds.length} feeds`,
               );
-              launchCommand({
-                name: "unread-menu-bar",
-                type: LaunchType.Background,
-              });
+              refreshMenuBar();
             }}
           />
         </ActionPanel>
@@ -88,10 +84,7 @@ export default function Command(): JSX.Element {
             Toast.Style.Success,
             `Subscribed to ${result.feed_url}`,
           );
-          launchCommand({
-            name: "unread-menu-bar",
-            type: LaunchType.Background,
-          });
+          refreshMenuBar();
           return;
         } else if (result.status === 404) {
           closeAndShowToast(Toast.Style.Failure, "No feeds found");

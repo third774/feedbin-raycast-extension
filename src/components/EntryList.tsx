@@ -1,6 +1,7 @@
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { Entry } from "../utils/api";
+import { isPagesSubscription } from "../utils/isPagesSubscription";
 import { useIcon } from "../utils/useIcon";
 import { ActionAiSummary } from "./ActionAiSummary";
 import { ActionCopyUrlToClipboard } from "./ActionCopyUrlToClipboard";
@@ -28,6 +29,10 @@ export function EntryList(props: EntryListProps) {
     subscriptions,
   } = useFeedbinApiContext();
 
+  const readLaterSubscription = subscriptions.data?.find((sub) =>
+    isPagesSubscription(sub),
+  );
+
   return (
     <List
       navigationTitle={props.navigationTitle}
@@ -40,19 +45,28 @@ export function EntryList(props: EntryListProps) {
               setFilterFeedId(value === "all" ? undefined : Number(value));
             }}
           >
-            <List.Dropdown.Item title={"All feeds"} value={"all"} />
-            {subscriptions.data?.map((subscription) => {
-              return (
+            <List.Dropdown.Section>
+              <List.Dropdown.Item title={"All feeds"} value={"all"} />
+              {readLaterSubscription && (
                 <List.Dropdown.Item
-                  key={subscription.id}
-                  title={subscription.title}
-                  keywords={[subscription.title, subscription.site_url]}
-                  value={subscription.feed_id.toString()}
+                  title={"Read Later"}
+                  value={readLaterSubscription?.feed_id.toString()}
                 />
-              );
-            })}
-            {/* <List.Dropdown.Item title="Prioritize Unread" value="true" />
-          <List.Dropdown.Item title="Show All in Order" value="false" /> */}
+              )}
+            </List.Dropdown.Section>
+            <List.Dropdown.Section title="Feeds">
+              {subscriptions.data?.map((subscription) => {
+                if (isPagesSubscription(subscription)) return null;
+                return (
+                  <List.Dropdown.Item
+                    key={subscription.id}
+                    title={subscription.title}
+                    keywords={[subscription.title, subscription.site_url]}
+                    value={subscription.feed_id.toString()}
+                  />
+                );
+              })}
+            </List.Dropdown.Section>
           </List.Dropdown>
         )
       }

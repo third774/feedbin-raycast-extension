@@ -2,13 +2,13 @@ import {
   Action,
   Alert,
   Icon,
-  LaunchType,
   clearSearchBar,
   confirmAlert,
-  launchCommand,
 } from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { unsubscribe } from "../utils/api";
+import { isPagesSubscription } from "../utils/isPagesSubscription";
+import { refreshMenuBar } from "../utils/refreshMenuBar";
 
 export interface ActionUnsubscribeProps {
   feedId: number;
@@ -24,7 +24,7 @@ export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
   if (!subscription) return null;
 
   // Don't allow unsubscribing from Pages feeds
-  if (subscription.site_url === "http://pages.feedbinusercontent.com") {
+  if (isPagesSubscription(subscription)) {
     return null;
   }
 
@@ -53,10 +53,7 @@ export function ActionUnsubscribe(props: ActionUnsubscribeProps) {
             optimisticUpdate: (subs) =>
               subs?.filter((sub) => sub.id !== subscription.id),
           });
-          launchCommand({
-            name: "unread-menu-bar",
-            type: LaunchType.Background,
-          });
+          refreshMenuBar();
           clearSearchBar();
         }
       }}

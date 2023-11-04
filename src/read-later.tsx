@@ -2,6 +2,7 @@ import { getSelectedText, Toast } from "@raycast/api";
 import { readLater } from "./utils/api";
 import { closeAndShowToast } from "./utils/closeAndShowToast";
 import { isValidURL } from "./utils/isValidURL";
+import { refreshMenuBar } from "./utils/refreshMenuBar";
 
 export default async function Main() {
   let url: string | null;
@@ -29,6 +30,7 @@ export default async function Main() {
         Toast.Style.Success,
         `Saved ${entry.url} to Read Later`,
       );
+      refreshMenuBar();
     } else {
       await closeAndShowToast(
         Toast.Style.Failure,
