@@ -16,10 +16,12 @@ export interface ActionOpenEntryAndMarkAsReadProps {
 export function ActionOpenEntryAndMarkAsRead(
   props: ActionOpenEntryAndMarkAsReadProps,
 ) {
-  const { unreadEntries } = useFeedbinApiContext();
+  const { unreadEntriesSet, unreadEntries } = useFeedbinApiContext();
   const { pop } = useNavigation();
+  if (!unreadEntriesSet.has(props.entry.id)) return null;
   return (
     <Action.OpenInBrowser
+      title="Open and Mark as Read"
       icon={Icon.CheckCircle}
       url={props.entry.url}
       shortcut={{
