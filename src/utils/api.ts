@@ -2,8 +2,8 @@ import { getPreferenceValues } from "@raycast/api";
 import { showFailureToast } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useEffect, useMemo } from "react";
-import { useCachedFetch } from "./cache";
 import { toURLSearchParams } from "./toURLSearchParams";
+import { useFetchWithEtag } from "./useFetchEtag";
 
 const API_ROOT = "https://api.feedbin.com";
 
@@ -59,7 +59,7 @@ type EntriesParams = {
 
 export function useEntries({ feedId, ...params }: EntriesParams = {}) {
   const searchParams = toURLSearchParams(params);
-  const { error, revalidate, ...rest } = useCachedFetch<Entry[]>(
+  const { error, revalidate, ...rest } = useFetchWithEtag<Entry[]>(
     feedId
       ? `${API_ROOT}/v2/feeds/${feedId}/entries.json?${searchParams}`
       : `${API_ROOT}/v2/entries.json?${searchParams}`,
@@ -91,7 +91,7 @@ export function useEntries({ feedId, ...params }: EntriesParams = {}) {
 }
 
 export function useSubscriptions() {
-  const { error, revalidate, ...rest } = useCachedFetch<Subscription[]>(
+  const { error, revalidate, ...rest } = useFetchWithEtag<Subscription[]>(
     `${API_ROOT}/v2/subscriptions.json?`,
     {
       method: "GET",
@@ -179,7 +179,7 @@ export function deleteStarredEntries(...entryIds: number[]) {
 }
 
 export function useStarredEntriesIds() {
-  return useCachedFetch<number[]>(`${API_ROOT}/v2/starred_entries.json`, {
+  return useFetchWithEtag<number[]>(`${API_ROOT}/v2/starred_entries.json`, {
     method: "GET",
     headers: getHeaders(),
   });
@@ -190,7 +190,7 @@ export function useStarredEntries(params: EntriesParams = {}) {
 }
 
 export function useFeedEntries(id: number) {
-  return useCachedFetch<Entry[]>(`${API_ROOT}/v2/feeds/${id}/entries.json`, {
+  return useFetchWithEtag<Entry[]>(`${API_ROOT}/v2/feeds/${id}/entries.json`, {
     method: "GET",
     headers: getHeaders(),
   });
@@ -207,7 +207,7 @@ export function unsubscribe(subscriptionId: number) {
 }
 
 export function useUnreadEntriesIds() {
-  return useCachedFetch<number[]>(`${API_ROOT}/v2/unread_entries.json`, {
+  return useFetchWithEtag<number[]>(`${API_ROOT}/v2/unread_entries.json`, {
     method: "GET",
     headers: getHeaders(),
   });
@@ -260,7 +260,7 @@ export interface Icon {
 }
 
 export function useIcons() {
-  return useCachedFetch<Icon[]>(`${API_ROOT}/v2/icons.json`, {
+  return useFetchWithEtag<Icon[]>(`${API_ROOT}/v2/icons.json`, {
     headers: getHeaders(),
   });
 }
