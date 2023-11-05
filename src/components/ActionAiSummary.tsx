@@ -45,18 +45,23 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
   );
 }
 
-const prompt = (content: string) =>
-  `INSTRUCTIONS:
-Summarize the CONTENT below:
----
+const prompt = (content: string) => `Task:
+Instructions:
+1. Read the article.
+2. Summarize the main topic and arguments.
+3. Identify and present key points, insights, and conclusions.
+4. Format your summary for ease of reading.
 
-CONTENT:
+Evaluation Criteria:
+• Accuracy
+• Conciseness
+• Readability
+• Objectivity
+
+Article to Summarize:
 ${content}
 
----
-
----
-SUMMARY:
+Summary:
 `;
 
 const promptLength = prompt("").length;
@@ -66,6 +71,7 @@ export function DetailSummarized(props: { entry: Entry }) {
   // tons of links which may eat into the 10k character limit
   const content = parse(props.entry.content ?? "").textContent;
   const promptText = prompt(content.substring(0, 9999 - promptLength));
+
   const { data, isLoading } = useAI(promptText, {
     creativity: 0,
     execute: props.entry.content !== null,
@@ -78,7 +84,9 @@ export function DetailSummarized(props: { entry: Entry }) {
       markdown={data}
       isLoading={isLoading}
       navigationTitle={
-        props.entry.title ?? props.entry.summary ?? props.entry.url
+        "AI Summary: " + props.entry.title ??
+        props.entry.summary ??
+        props.entry.url
       }
       actions={
         <ActionPanel>
