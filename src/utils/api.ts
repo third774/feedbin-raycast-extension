@@ -148,7 +148,7 @@ export function markAsRead(...entryIds: number[]) {
     method: "DELETE",
     headers: getHeaders(jsonHeaders),
   }).catch((err) => {
-    showFailureToast("Failed to Mark as Read");
+    showFailureToast("Failed to mark as read");
     throw err;
   });
 }
