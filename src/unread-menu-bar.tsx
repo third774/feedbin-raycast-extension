@@ -79,20 +79,24 @@ export default function MenuCommand(): JSX.Element {
               return (
                 <MenuBarExtra.Submenu key={entry.id} title={title}>
                   <MenuBarExtra.Item
+                    icon={Icon.Globe}
                     title={"Open in Browser"}
                     onAction={() => open(entry.url)}
                   />
                   <MenuBarExtra.Item
+                    icon={Icon.CopyClipboard}
                     title={"Copy to Clipboard"}
                     onAction={() => Clipboard.copy(entry.url)}
                   />
                   <MenuBarExtra.Item
+                    icon={Icon.Check}
                     title={"Mark as Read"}
                     onAction={async () => {
                       await entries.mutate(handleMarkAsRead(entry));
                     }}
                   />
                   <MenuBarExtra.Item
+                    icon={Icon.CheckCircle}
                     title={"Open and Mark as Read"}
                     onAction={async () => {
                       open(entry.url);
