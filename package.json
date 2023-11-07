@@ -74,6 +74,12 @@
       "title": "Read Selected URL Later",
       "description": "Saves the selected URL to Feedbin to read later",
       "mode": "no-view"
+    },
+    {
+      "name": "mark-selected-url-as-read",
+      "title": "Mark Selected URL as Read",
+      "description": "Marks the selected URL as read",
+      "mode": "no-view"
     }
   ],
   "dependencies": {
