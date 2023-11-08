@@ -58,19 +58,6 @@ type EntriesParams = {
   feedId?: number;
 };
 
-export function getEntries({ feedId, ...params }: EntriesParams = {}) {
-  const searchParams = toURLSearchParams(params);
-  return fetch(
-    feedId
-      ? `${API_ROOT}/v2/feeds/${feedId}/entries.json?${searchParams}`
-      : `${API_ROOT}/v2/entries.json?${searchParams}`,
-    {
-      method: "GET",
-      headers: getHeaders(),
-    },
-  ).then((res) => res.json() as Promise<Entry[]>);
-}
-
 export function useEntries({ feedId, ...params }: EntriesParams = {}) {
   const searchParams = toURLSearchParams(params);
   const { error, revalidate, ...rest } = useFetchWithEtag<Entry[]>(
