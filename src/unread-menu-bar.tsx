@@ -13,7 +13,8 @@ import { useEffect } from "react";
 import { Entry, markAsRead, useEntries, useSubscriptionMap } from "./utils/api";
 
 export default function MenuCommand(): JSX.Element {
-  const { showCountInMenuBar } = getPreferenceValues();
+  const { showCountInMenuBar } =
+    getPreferenceValues<Preferences.UnreadMenuBar>();
   const entries = useEntries({ read: false });
   const subscriptionMap = useSubscriptionMap();
 

@@ -39,7 +39,7 @@ export interface Subscription {
 }
 
 function getHeaders(rest: Record<string, string> = {}) {
-  const { email, password } = getPreferenceValues();
+  const { email, password } = getPreferenceValues<ExtensionPreferences>();
   return {
     Authorization: "Basic " + btoa(`${email}:${password}`),
     ...rest,
