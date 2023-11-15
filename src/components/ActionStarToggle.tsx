@@ -7,31 +7,16 @@ export interface ActionStarToggleProps {
 }
 
 export function ActionStarToggle(props: ActionStarToggleProps) {
-  const { entries, unreadEntries, starredEntriesIds, starredEntriesIdsSet } =
-    useFeedbinApiContext();
+  const { starredEntriesIds, starredEntriesIdsSet } = useFeedbinApiContext();
   return starredEntriesIdsSet.has(props.id) ? (
     <Action
       title="Unstar This Content"
       icon={Icon.StarDisabled}
       onAction={async () => {
-        starredEntriesIds.mutate(
-          unreadEntries.mutate(
-            entries.mutate(deleteStarredEntries(props.id), {
-              shouldRevalidateAfter: false,
-              optimisticUpdate: (entries) =>
-                entries?.filter((entry) => entry.id !== props.id),
-            }),
-            {
-              shouldRevalidateAfter: false,
-              optimisticUpdate: (entries) =>
-                entries?.filter((entry) => entry.id !== props.id),
-            },
-          ),
-          {
-            shouldRevalidateAfter: false,
-            optimisticUpdate: (ids) => ids?.filter((id) => id !== props.id),
-          },
-        );
+        starredEntriesIds.mutate(deleteStarredEntries(props.id), {
+          shouldRevalidateAfter: false,
+          optimisticUpdate: (ids) => ids?.filter((id) => id !== props.id),
+        });
       }}
       shortcut={{
         key: "s",
