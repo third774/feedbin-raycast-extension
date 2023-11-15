@@ -41,7 +41,7 @@
         }
       ],
       "description": "Where to get the URL from when marking an article to read later or subscribing to a feed",
-      "required": true,
+      "required": false,
       "default": "selected-text"
     }
   ],
