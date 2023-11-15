@@ -234,7 +234,13 @@ export function createSubscription(url: string) {
     method: "POST",
     headers: getHeaders(jsonHeaders),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.status === 401) {
+        showFailureToast("Authorization Failed");
+        return undefined;
+      }
+      return res.json();
+    })
     .catch((err) => {
       showFailureToast("Failed to Subscribe");
       throw err;
@@ -247,7 +253,13 @@ export function readLater(url: string) {
     headers: getHeaders(jsonHeaders),
     body: JSON.stringify({ url }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.status === 401) {
+        showFailureToast("Authorization Failed");
+        return undefined;
+      }
+      return res.json();
+    })
     .catch((err) => {
       showFailureToast("Failed to Save to Read Later");
       throw err;

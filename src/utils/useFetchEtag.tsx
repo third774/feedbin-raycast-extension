@@ -1,4 +1,8 @@
-import { CachedPromiseOptions, useCachedPromise } from "@raycast/utils";
+import {
+  CachedPromiseOptions,
+  showFailureToast,
+  useCachedPromise,
+} from "@raycast/utils";
 import { Headers, RequestInfo, RequestInit, Response } from "node-fetch";
 import { fetchWithETag } from "./fetchWithETag";
 
@@ -22,13 +26,17 @@ export function useFetchWithEtag<T = unknown, U = undefined>(
     > = {},
 ) {
   const api = useCachedPromise<
-    (input: RequestInfo, init: RequestInit) => Promise<T>,
+    (input: RequestInfo, init: RequestInit) => Promise<T | undefined>,
     U
   >(
     async (input: RequestInfo, restFetchOptions: RequestInit) => {
-      return fetchWithETag(input, restFetchOptions).then((res) =>
-        parseResponse ? parseResponse(res) : (res.json() as Promise<T>),
-      );
+      return fetchWithETag(input, restFetchOptions).then(async (res) => {
+        if (res.status === 401) {
+          showFailureToast("Authorization Failed");
+          return undefined;
+        }
+        return parseResponse ? parseResponse(res) : (res.json() as Promise<T>);
+      });
     },
     [input, restFetchOptions],
     {
