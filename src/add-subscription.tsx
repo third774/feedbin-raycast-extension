@@ -2,8 +2,8 @@ import {
   Action,
   ActionPanel,
   Form,
+  LaunchProps,
   Toast,
-  getSelectedText,
   popToRoot,
   showToast,
   useNavigation,
@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { MultipleFeeds, createSubscription } from "./utils/api";
 import { closeAndShowToast } from "./utils/closeAndShowToast";
-import { isValidURL } from "./utils/isValidURL";
+import { getUrl } from "./utils/getUrl";
 import { refreshMenuBar } from "./utils/refreshMenuBar";
 
 function AddMultipleFeeds(props: { feeds: MultipleFeeds }) {
@@ -57,7 +57,9 @@ function AddMultipleFeeds(props: { feeds: MultipleFeeds }) {
   );
 }
 
-export default function Command(): JSX.Element {
+export default function Command(
+  props: LaunchProps<{ arguments: Arguments.AddSubscription }>,
+): JSX.Element {
   const { push } = useNavigation();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -65,15 +67,11 @@ export default function Command(): JSX.Element {
   useEffect(() => {
     (async () => {
       try {
-        const text = await getSelectedText();
-        if (!isValidURL(text)) {
-          popToRoot({ clearSearchBar: false });
-          showToast(Toast.Style.Failure, "Invalid URL selected");
-          return;
-        }
+        const url = await getUrl(props.arguments.url);
+        if (url === undefined) return;
 
         showToast(Toast.Style.Animated, "Checking for feeds...");
-        const result = await createSubscription(text);
+        const result = await createSubscription(url.toString());
         setIsLoading(false);
         if (Array.isArray(result)) {
           showToast(Toast.Style.Success, "Multiple feeds found");

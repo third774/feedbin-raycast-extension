@@ -1,30 +1,18 @@
-import { getSelectedText, Toast } from "@raycast/api";
+import { LaunchProps, Toast } from "@raycast/api";
 import { readLater } from "./utils/api";
 import { closeAndShowToast } from "./utils/closeAndShowToast";
-import { isValidURL } from "./utils/isValidURL";
+import { getUrl } from "./utils/getUrl";
 import { refreshMenuBar } from "./utils/refreshMenuBar";
 
-export default async function Main() {
-  let url: string | null;
-
-  try {
-    url = await getSelectedText();
-  } catch (error) {
-    await closeAndShowToast(Toast.Style.Failure, "Unable to get selected text");
-    return;
-  }
-
-  if (!isValidURL(url)) {
-    await closeAndShowToast(
-      Toast.Style.Failure,
-      "Selected text is not a valid URL",
-    );
-    return;
-  }
+export default async function Main(
+  props: LaunchProps<{ arguments: Arguments.ReadLater }>,
+) {
+  const url = await getUrl(props.arguments.url);
+  if (url === undefined) return;
 
   try {
     await closeAndShowToast(Toast.Style.Animated, `Saving ${url}`);
-    const entry = await readLater(url);
+    const entry = await readLater(url.toString());
     if (entry && entry.id) {
       await closeAndShowToast(
         Toast.Style.Success,

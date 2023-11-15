@@ -25,6 +25,24 @@
       "name": "password",
       "required": true,
       "description": "Password used for your Feedbin account"
+    },
+    {
+      "title": "URL Source",
+      "type": "dropdown",
+      "name": "urlSource",
+      "data": [
+        {
+          "title": "Selected Text",
+          "value": "selected-text"
+        },
+        {
+          "title": "Clipboard",
+          "value": "clipboard"
+        }
+      ],
+      "description": "Where to get the URL from when marking an article to read later or subscribing to a feed",
+      "required": true,
+      "default": "selected-text"
     }
   ],
   "commands": [
@@ -65,15 +83,31 @@
     },
     {
       "name": "add-subscription",
-      "title": "Subscribe to Selected URL",
-      "description": "Subscibes to an RSS feed",
-      "mode": "view"
+      "title": "Subscribe to URL",
+      "description": "Looks for RSS feeds on the given URL. If only one is found it will be subscribed to, but if multiple are found you will be presented with the options to choose from. The source of the URL is based on the extension level URL Source preference and defaults to selected text.",
+      "mode": "view",
+      "arguments": [
+        {
+          "type": "text",
+          "name": "url",
+          "placeholder": "https://example.com",
+          "required": false
+        }
+      ]
     },
     {
       "name": "read-later",
-      "title": "Read Selected URL Later",
-      "description": "Saves the selected URL to Feedbin to read later",
-      "mode": "no-view"
+      "title": "Read Later",
+      "description": "Saves the URL to Feedbin to read later. The source of the URL is based on the extension level URL Source preference and defaults to selected text.",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "type": "text",
+          "name": "url",
+          "placeholder": "https://example.com",
+          "required": false
+        }
+      ]
     }
   ],
   "dependencies": {
