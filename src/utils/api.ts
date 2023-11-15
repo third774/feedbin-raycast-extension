@@ -2,7 +2,6 @@ import { getPreferenceValues } from "@raycast/api";
 import { showFailureToast } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useEffect, useMemo } from "react";
-import { useCachedFetch } from "./cache";
 import { toURLSearchParams } from "./toURLSearchParams";
 import { useFetchWithEtag } from "./useFetchEtag";
 
@@ -92,7 +91,7 @@ export function useEntries({ feedId, ...params }: EntriesParams = {}) {
 }
 
 export function useSubscriptions() {
-  const { error, revalidate, ...rest } = useCachedFetch<Subscription[]>(
+  const { error, revalidate, ...rest } = useFetchWithEtag<Subscription[]>(
     `${API_ROOT}/v2/subscriptions.json?`,
     {
       method: "GET",
