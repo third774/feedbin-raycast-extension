@@ -55,7 +55,7 @@
     {
       "name": "unread-menu-bar",
       "title": "Feedbin Menu Bar",
-      "description": "Fetches updates in the background and displays the number of unread entries in the menu bar",
+      "description": "Fetches updates every 15 minutes in the background and displays the number of unread entries in the menu bar",
       "mode": "menu-bar",
       "interval": "15m",
       "preferences": [
