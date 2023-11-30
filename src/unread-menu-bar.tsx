@@ -1,5 +1,4 @@
 import {
-  Clipboard,
   Icon,
   MenuBarExtra,
   Toast,
@@ -78,33 +77,21 @@ export default function MenuCommand(): JSX.Element {
                 title = title.substring(0, 60) + "...";
               }
               return (
-                <MenuBarExtra.Submenu key={entry.id} title={title}>
-                  <MenuBarExtra.Item
-                    icon={Icon.Globe}
-                    title={"Open in Browser"}
-                    onAction={() => open(entry.url)}
-                  />
-                  <MenuBarExtra.Item
-                    icon={Icon.CopyClipboard}
-                    title={"Copy to Clipboard"}
-                    onAction={() => Clipboard.copy(entry.url)}
-                  />
-                  <MenuBarExtra.Item
-                    icon={Icon.Check}
-                    title={"Mark as Read"}
-                    onAction={async () => {
-                      await entries.mutate(handleMarkAsRead(entry));
-                    }}
-                  />
-                  <MenuBarExtra.Item
-                    icon={Icon.CheckCircle}
-                    title={"Open and Mark as Read"}
-                    onAction={async () => {
-                      open(entry.url);
-                      await entries.mutate(handleMarkAsRead(entry));
-                    }}
-                  />
-                </MenuBarExtra.Submenu>
+                <MenuBarExtra.Item
+                  key={entry.id}
+                  title={title}
+                  icon={Icon.Globe}
+                  onAction={() => open(entry.url)}
+                  alternate={
+                    <MenuBarExtra.Item
+                      icon={Icon.Check}
+                      title={"Mark as Read: " + title}
+                      onAction={async () => {
+                        await entries.mutate(handleMarkAsRead(entry));
+                      }}
+                    />
+                  }
+                />
               );
             })}
           </MenuBarExtra.Section>
