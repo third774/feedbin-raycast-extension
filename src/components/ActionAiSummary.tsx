@@ -45,20 +45,21 @@ export function ActionAiSummary(props: ActionAiSummaryProps) {
   );
 }
 
-const prompt = (content: string) => `Task:
-Instructions:
-1. Read the article.
-2. Summarize the main topic and arguments.
-3. Identify and present key points, insights, and conclusions.
+const prompt = (content: string) => `Instructions:
+1. Read the content.
+2. You are an expert in the content's topic.
+3. Summarize the main topic.
 4. Format your summary for ease of reading.
+5. If the content is short, your summary should be short.
 
 Evaluation Criteria:
-• Accuracy
-• Conciseness
-• Readability
-• Objectivity
+- Accuracy
+- Conciseness
+- Readability
+- Objectivity
+- Reasonable length considering the content
 
-Article to Summarize:
+Content to Summarize:
 ${content}
 
 Summary:
