@@ -1,8 +1,10 @@
 import {
   Icon,
+  LaunchType,
   MenuBarExtra,
   Toast,
   getPreferenceValues,
+  launchCommand,
   open,
   openCommandPreferences,
   showToast,
@@ -64,6 +66,15 @@ export default function MenuCommand(): JSX.Element {
       title={showCountInMenuBar ? unreadCount.toString() : undefined}
       isLoading={entries.isLoading || subscriptionMap.isLoading}
     >
+      <MenuBarExtra.Item
+        title="Manage Subscriptions"
+        onAction={() =>
+          launchCommand({
+            name: "subscriptions",
+            type: LaunchType.UserInitiated,
+          })
+        }
+      />
       {unreadCount === 0 && <MenuBarExtra.Section title="No unread items" />}
       {groupedEntries.map(([feedId, groupedEntries]) => {
         return (
