@@ -77,8 +77,8 @@
     },
     {
       "name": "subscriptions",
-      "title": "View Subscriptions",
-      "description": "List Feedbin Subscriptions",
+      "title": "Manage Subscriptions",
+      "description": "Manage Feedbin Subscriptions",
       "mode": "view"
     },
     {
