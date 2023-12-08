@@ -1,4 +1,4 @@
-import { Action, Icon, useNavigation } from "@raycast/api";
+import { Action, Icon, popToRoot } from "@raycast/api";
 import { useFeedbinApiContext } from "../utils/FeedbinApiContext";
 import { Entry, markAsRead } from "../utils/api";
 import { refreshMenuBar } from "../utils/refreshMenuBar";
@@ -12,7 +12,6 @@ export function ActionOpenEntryAndMarkAsRead(
   props: ActionOpenEntryAndMarkAsReadProps,
 ) {
   const { unreadEntriesSet, unreadEntries } = useFeedbinApiContext();
-  const { pop } = useNavigation();
   if (!unreadEntriesSet.has(props.entry.id)) return null;
   return (
     <Action.OpenInBrowser
@@ -30,7 +29,7 @@ export function ActionOpenEntryAndMarkAsRead(
         });
         await refreshMenuBar();
         if (props.pop) {
-          pop();
+          popToRoot();
         }
       }}
     />
