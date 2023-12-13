@@ -7,6 +7,7 @@ import {
   launchCommand,
   open,
   openCommandPreferences,
+  openExtensionPreferences,
   showToast,
   updateCommandMetadata,
 } from "@raycast/api";
@@ -114,6 +115,13 @@ export default function MenuCommand(): JSX.Element {
           icon={Icon.Gear}
           shortcut={{ modifiers: ["cmd"], key: "," }}
           onAction={openCommandPreferences}
+          alternate={
+            <MenuBarExtra.Item
+              title="Configure Extension"
+              icon={Icon.Gear}
+              onAction={openExtensionPreferences}
+            />
+          }
         />
       </MenuBarExtra.Section>
     </MenuBarExtra>
